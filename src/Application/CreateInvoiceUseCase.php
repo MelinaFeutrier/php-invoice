@@ -26,7 +26,7 @@ class CreateInvoiceUseCase
         try {
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();
-
+            return $invoice;
         } catch (\Exception $exception) {
             throw new \Exception("Cannot create invoice. Please try again later");
         }
