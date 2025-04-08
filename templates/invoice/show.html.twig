@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Détails de la facture</h1>
+    <ul>
+        <li><strong>Titre :</strong> {{ invoice.title }}</li>
+        <li><strong>Prix :</strong> {{ invoice.price }} €</li>
+        <li><strong>Description :</strong> {{ invoice.description ?: 'Aucune' }}</li>
+        <li><strong>Date de création :</strong> {{ invoice.createdAt|date('d/m/Y') }}</li>
+        <li><strong>Statut :</strong> {{ invoice.status }}</li>
+        {% if invoice.status == 'PAID' and invoice.paidAt %}
+            <li><strong>Date de paiement :</strong> {{ invoice.paidAt|date('d/m/Y') }}</li>
+        {% endif %}
+    </ul>
+
+    <div class="actions">
+        <a href="{{ path('invoice_edit', {'id': invoice.id}) }}" class="btn btn-primary">Modifier</a>
+
+        {% if invoice.status == 'PENDING' %}
+            <form action="{{ path('invoice_pay', {'id': invoice.id}) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-success">Marquer comme payée</button>
+            </form>
+        {% endif %}
+
+        <form action="{{ path('invoice_delete', {'id': invoice.id}) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Supprimer</button>
+        </form>
+    </div>
+{% endblock %}
