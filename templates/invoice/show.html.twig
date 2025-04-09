@@ -1,28 +1,87 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>Détails de la facture</h1>
-    <ul>
-        <li><strong>Titre :</strong> {{ invoice.title }}</li>
-        <li><strong>Prix :</strong> {{ invoice.price }} €</li>
-        <li><strong>Description :</strong> {{ invoice.description ?: 'Aucune' }}</li>
-        <li><strong>Date de création :</strong> {{ invoice.createdAt|date('d/m/Y') }}</li>
-        <li><strong>Statut :</strong> {{ invoice.status }}</li>
-        {% if invoice.status == 'PAID' and invoice.paidAt %}
-            <li><strong>Date de paiement :</strong> {{ invoice.paidAt|date('d/m/Y') }}</li>
-        {% endif %}
-    </ul>
+    <div class="container my-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">{{ invoice.title }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="mb-3">Informations générales</h4>
+                        <ul class="list-group mb-4">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-tag me-2"></i> <strong>Titre :</strong></span>
+                                <span>{{ invoice.title }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-euro-sign me-2"></i> <strong>Prix :</strong></span>
+                                <span>{{ invoice.price|number_format(2, ',', ' ') }} €</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-file-alt me-2"></i> <strong>Description :</strong></span>
+                                <span>{{ invoice.description ?: 'Aucune' }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-info-circle me-2"></i> <strong>Statut :</strong></span>
+                                <span class="badge {% if invoice.status == 'PAID' %}bg-success{% else %}bg-warning{% endif %} p-2">
+                                    {% if invoice.status == 'PAID' %}Payée{% else %}En attente{% endif %}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="mb-3">Informations temporelles</h4>
+                        <ul class="list-group mb-4">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-calendar-alt me-2"></i> <strong>Date de création :</strong></span>
+                                <span>{{ invoice.createdAt|date('d/m/Y à H:i') }}</span>
+                            </li>
+                            {% if invoice.createdBy %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-user me-2"></i> <strong>Créée par :</strong></span>
+                                    <span>{{ invoice.createdBy.email }}</span>
+                                </li>
+                            {% endif %}
+                            {% if invoice.status == 'PAID' and invoice.paidAt %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-calendar-check me-2"></i> <strong>Date de paiement :</strong></span>
+                                    <span>{{ invoice.paidAt|date('d/m/Y à H:i') }}</span>
+                                </li>
+                            {% endif %}
+                            {% if invoice.status == 'PAID' and invoice.paidBy %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-user-check me-2"></i> <strong>Payée par :</strong></span>
+                                <span>{{ invoice.paidBy.email }}</span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
 
-    <div class="actions">
-        <a href="{{ path('invoice_edit', {'id': invoice.id}) }}" class="btn btn-primary">Modifier</a>
+                <div class="actions mt-4 d-flex gap-2">
+                    <a href="{{ path('invoice_list') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                    </a>
+                    <a href="{{ path('invoice_edit', {'id': invoice.id}) }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Modifier
+                    </a>
 
-        {% if invoice.status == 'PENDING' %}
-            <form action="{{ path('invoice_pay', {'id': invoice.id}) }}" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-success">Marquer comme payée</button>
-            </form>
-        {% endif %}
+                    {% if invoice.status == 'PENDING' %}
+                        <form action="{{ path('invoice_pay', {'id': invoice.id}) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check-circle me-2"></i>Marquer comme payée
+                            </button>
+                        </form>
+                    {% endif %}
 
-        <form action="{{ path('invoice_delete', {'id': invoice.id}) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');" style="display:inline;">
-            <button type="submit" class="btn btn-danger">Supprimer</button>
-        </form>
+                    <form action="{{ path('invoice_delete', {'id': invoice.id}) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-2"></i>Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

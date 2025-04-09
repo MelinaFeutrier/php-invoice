@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Système de Facturation{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .register-container {
+            max-width: 550px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            background-color: #fff;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-icon {
+            font-size: 3rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+
+        .register-form .form-floating {
+            margin-bottom: 1rem;
+        }
+
+        .role-description {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="register-container">
+        <div class="register-header">
+            <div class="register-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2>Créez votre compte</h2>
+            <p class="text-muted">Rejoignez notre système de facturation</p>
+        </div>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <form class="register-form" action="{{ path('app_register') }}" method="POST">
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="nom@exemple.com" required>
+                <label for="email"><i class="fas fa-envelope me-2"></i>Adresse email</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Mot de passe" required>
+                <label for="password"><i class="fas fa-lock me-2"></i>Mot de passe</label>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Confirmer le mot de passe" required>
+                <label for="password_confirm"><i class="fas fa-lock me-2"></i>Confirmer le mot de passe</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select class="form-select" id="role" name="role" required>
+                    {% for role in roles %}
+                        <option value="{{ role }}">
+                            {% if role == 'ROLE_R_FINANCIER' %}
+                                Responsable Financier
+                            {% elseif role == 'ROLE_ARTISAN' %}
+                                Artisan
+                            {% elseif role == 'ROLE_USER' %}
+                                Utilisateur standard
+                            {% else %}
+                                {{ role }}
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                <label for="role"><i class="fas fa-user-tag me-2"></i>Type de compte</label>
+            </div>
+
+            <div class="role-description mb-4">
+                <p class="mb-1"><i class="fas fa-info-circle me-1"></i> Description des rôles :</p>
+                <ul class="ps-4 mb-0">
+                    <li><strong>Responsable Financier</strong> : Accès complet à la gestion financière</li>
+                    <li><strong>Artisan</strong> : Création et gestion des factures pour vos clients</li>
+                    <li><strong>Utilisateur standard</strong> : Consultation des factures et accès limité</li>
+                </ul>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Créer mon compte
+                </button>
+            </div>
+
+            <div class="register-footer">
+                <p>Vous avez déjà un compte ? <a href="{{ path('login') }}" class="text-decoration-none">Connectez-vous</a></p>
+            </div>
+        </form>
+    </div>
+{% endblock %}

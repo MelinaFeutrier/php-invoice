@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,6 +35,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, Invoice>
+     */
+    #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'createdBy')]
+    private Collection $invoices;
+
+    /**
+     * @var Collection<int, Invoice>
+     */
+    #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'paidBy')]
+    private Collection $listeInvoices;
+
+    public function __construct()
+    {
+        $this->invoices = new ArrayCollection();
+        $this->listeInvoices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -107,5 +127,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Invoice>
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
+
+    public function addInvoice(Invoice $invoice): static
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices->add($invoice);
+            $invoice->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoice(Invoice $invoice): static
+    {
+        if ($this->invoices->removeElement($invoice)) {
+            // set the owning side to null (unless already changed)
+            if ($invoice->getCreatedBy() === $this) {
+                $invoice->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Invoice>
+     */
+    public function getListeInvoices(): Collection
+    {
+        return $this->listeInvoices;
+    }
+
+    public function addListeInvoice(Invoice $listeInvoice): static
+    {
+        if (!$this->listeInvoices->contains($listeInvoice)) {
+            $this->listeInvoices->add($listeInvoice);
+            $listeInvoice->setPaidBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeListeInvoice(Invoice $listeInvoice): static
+    {
+        if ($this->listeInvoices->removeElement($listeInvoice)) {
+            // set the owning side to null (unless already changed)
+            if ($listeInvoice->getPaidBy() === $this) {
+                $listeInvoice->setPaidBy(null);
+            }
+        }
+
+        return $this;
     }
 }

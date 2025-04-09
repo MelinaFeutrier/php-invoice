@@ -55,16 +55,13 @@ class InvoiceController extends AbstractController
             }
 
             try {
-                $this->createInvoiceUseCase->execute($title, $price, $description);
-                $this->addFlash("success", "La facture a bien été créée");
-                return $this->redirectToRoute('invoice_list');
+                $this->createInvoiceUseCase->execute($title, $price,$description);
             } catch (\Exception $e) {
                 $this->addFlash("error", $e->getMessage());
             }
 
         }
         return $this->render('invoice/create.html.twig', []);
-        return $this->redirectToRoute('invoice_show', ['id' => $id]);
     }
 
     #[Route('/invoice/{id}', name: 'invoice_show', methods: ['GET'])]
@@ -95,8 +92,8 @@ class InvoiceController extends AbstractController
         return $this->redirectToRoute('invoice_list');
     }
 
-     #[Route('/invoices', name: 'invoice_list', methods: ['GET'])]
-        public function listInvoices(): Response
+    #[Route('/invoices', name: 'invoice_list', methods: ['GET'])]
+    public function listInvoices(): Response
     {
         $invoices = $this->getAllInvoiceUseCase->execute();
 

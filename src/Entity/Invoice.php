@@ -32,6 +32,11 @@ class Invoice
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $paidAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    private ?User $createdBy = null;
+
+    #[ORM\ManyToOne(inversedBy: 'listeInvoices')]
+    private ?User $paidBy = null;
 
     public function __construct($title, $price, $description = null)
     {
@@ -141,4 +146,29 @@ class Invoice
 
         return $this;
     }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getPaidBy(): ?User
+    {
+        return $this->paidBy;
+    }
+
+    public function setPaidBy(?User $paidBy): static
+    {
+        $this->paidBy = $paidBy;
+
+        return $this;
+    }
+
 }
